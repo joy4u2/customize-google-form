@@ -1,28 +1,121 @@
-extends layouts/bootstrap
+doctype html
+html(lang='vi')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0')
+    title Tùy chỉnh Google Form
+    link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js')
+  body
 
-block content
-  .container.mt-3
-    .row
-      .col-12.col-md-6.p-3
-         h1 Google Form Customize
-         p Apply Bootstrap style or create a new style to your Google Form
-         form#form-input
-          .form-group
-            label(for='id') Google Form URL
-            input(id='id' class='form-control' name='id' type='text')
-          .form-group
-            label(for='submit-text') Submit Button Text
-            input(id='submit-text' class='form-control' name='submit-text' type='text' value='OK')
-          .form-check
-            input(id='bootstrap' class='form-check-input' name='bootstrap' type='checkbox' checked)
-            label(class='form-check-label' for='bootstrap') Apply Bootstrap
-          input(class='btn btn-primary' type='submit')
-      .col-12.col-md-6.p-3
-        h1 Result
-        iframe#frame-result(style={ width: '100%', height: '60vh', border: '1px solid #e1e1e1' } src='')
-        h2 iFrame
-        input(id='result' class='form-control' type='text')
-        h2 Download source-code
-        a(id='download' class='btn btn-primary' href='#') Download
+    nav.navbar.navbar-expand-lg.navbar-light.bg-transparent.mb-4
+      .container
+        a.navbar-brand(href='/') Tùy chỉnh Google Form
+        button.navbar-toggler.border-0(type='button', data-toggle='collapse', data-target='#navbarNav', aria-controls='navbarNav', aria-expanded='false', aria-label='Toggle navigation')
+          span.navbar-toggler-icon
+        .collapse.navbar-collapse#navbarNav
+          ul.navbar-nav.ml-auto
+            li.nav-item
+              a.nav-link(href='#how-to') Hướng dẫn
+            li.nav-item
+              a.nav-link(href='#') Thông tin
 
-  script(src='./javascripts/index.js')
+    .container
+      .jumbotron.text-center
+        .col-12.col-md-8.mx-auto
+          h1.display-4 Tùy chỉnh Google Form
+          p.lead Thay đổi giao diện của Google Form với chủ đề Bootstrap hoặc tự sửa CSS với mã nguồn có sẵn
+
+          form
+            .form-group
+              input.form-control.text-center.form-control-lg#google-form-url(type='text', placeholder='Nhập liên kết Google Form URL ở đây')
+            button.btn.btn-lg.btn-primary(type='button', onclick='generateForm();') Tạo biểu mẫu
+              span#loader.spinner-border.ml-3(role='status' aria-hidden='true' style='display: none; width: 1.5rem; height: 1.5rem;')
+
+        #result.row.mt-5(style='display:none;')
+          .col-12.col-md-6.mx-auto.mb-3.text-center.text-md-left
+            h3 Hoàn thành!
+            p Sao chép đường dẫn liên kết iframe bên dưới để nhúng vào trang web của bạn
+            .form-group
+              .input-group
+                input#result-embed.form-control(type='text', readonly)
+                .input-group-append
+                  input.btn.btn-secondary(type='button', onclick=`$('#result-embed').select(); document.execCommand('copy')`, value='Sao chép')
+            p Vẫn không thích giao diện Bootstrap? Tải mã nguồn HTML về và tự thêm CSS của bạn ngay
+            a#result-download.btn.btn-success(href='#') Tải về
+          .col-12.col-md-6.mx-auto.text-center.text-md-left
+            h3 Xem thử
+            iframe#result-preview(src='', frameborder='0', style='width: 100%; height: 90vh;') Đang tải...
+
+      .row.py-4
+        .col-12.col-md-8.mx-auto.text-center
+          h2 Sửa giao diện Google Form
+          p Công cụ này giúp bạn tạo ra một biểu mẫu mới với giao diện của Bootstrap từ biểu mẫu có sẵn trên Google Form. Sau đó nhúng liên kết kèm với iframe trả về vào trang web của bạn là được, hoặc bạn có thể tải mã nguồn HTML rồi tự chỉnh sửa giao diện CSS.
+
+      hr
+
+      .row#how-to.py-4
+        .col-12.col-md-6
+          h3 Hướng dẫn
+          ol
+            li Chuẩn bị một biểu mẫu trong #[a(href='https://docs.google.com/forms') Google Form]
+            li Lấy đường dẫn liên kết của Google Form
+            li Dán đường dẫn vào khung nhập liệu
+            li Nhấn nút "Tạo biểu mẫu" và lấy đường dẫn liên kết để nhúng vào trang web
+        .col-12.col-md-6
+          h3 Đặc trưng
+          ul
+            li Giao diện Bootstrap gọn gàng, đơn giản
+            li Có thể nhúng trực tiếp kết quả trả về vào trang web mà không cần tải mã nguồn
+            li Tạo sẵn mã HTML cho biểu mẫu, bạn chỉ cần tải về và viết CSS
+
+      hr
+
+      .row.py-4
+        .col-12.col-md-4.text-center
+          img(src='./images/money-bag.png', alt='money-bag', width='70px')
+          h3.py-2 Miễn phí
+          p Không giới hạn số lần tạo và tải biểu mẫu
+        .col-12.col-md-4.text-center
+          img(src='./images/browser.png', alt='browser', width='70px', style='scale: 0.85;')
+          h3.py-2 Sử dụng ngay 
+          p Nhúng iframe trực tiếp vào trang web, không cần chỉnh sửa
+        .col-12.col-md-4.text-center
+          img(src='./images/download.png', alt='download', width='70px')
+          h3.py-2 Tải về
+          p Tải mã nguồn về và tự chỉnh sửa
+
+    footer.border-top.py-4
+      .container
+        .row
+          .col-12.text-center
+            - year = new Date().getFullYear()
+            span
+              | &copy; #{year} - 
+              a.text-dark(href='http://share4happy.com', target='_blank') Share4Happy.com
+
+  script.
+    function generateForm() {
+      $('#loader').show();
+      let baseUrl = document.URL.split(':')[0] + '://' + location.host;
+      let urlView = baseUrl + '/form/view?url=' + $('#google-form-url').val();
+      let urlDownload = baseUrl + '/form/download?url=' + urlView;
+      let iframe = `<iframe src="${urlView}" width="640" height="1425" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>`
+
+      fetch(urlView).then(response => {
+        response.json().then(data => {
+        });
+        if(response.status === 200) {
+          $('#result-preview')[0].setAttribute('src', urlView);
+          $('#result-download').attr('href', urlDownload);
+          $('#result-embed').val(iframe);
+          $('#result').show();
+        }
+        else {
+          alert('Không tìm thấy form');
+        }
+        $('#loader').hide();
+      });
+    }

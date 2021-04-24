@@ -1,61 +1,114 @@
-extends layouts/default
+mixin short-answer(label, name)
+  .form-group
+    label(for=name)= label
+    input.form-control(id=name name=name type='text')
 
-block content
-  form(action=data.formAction)
-    each input in data.dataParams
-      case input.type
-        when 0
-          label(for=input.name) #{input.label}
-          br
-          input(id=input.name name=input.name type='text')
-          br
-        when 1
-          label(for=input.name) #{input.label}
-          br
-          textarea(id=input.name name=input.name rows=3)
-          br
-        when 2
-          label #{input.label}
-          br
-          each radio, i in input.childs
-            .form-check
-              - id = input.name + '-' + i
-                label(for=id)
-                  input(id=id name=input.name type='radio' value=radio[0]) 
-                  | #{radio[0]}
-                  br
-        when 3
-          label(for=input.name) #{input.label}
-          br
-          select(id=input.name name=input.name)
-            each option in input.childs
-              option(value=option[0]) #{option[0]}
-              br
-        when 4
-          label #{input.label}
-          br
-          each radio, i in input.childs
-            .form-check
-              - id = input.name + '-' + i
-                label(for=id)
-                  input(id=id name=input.name type='checkbox' value=radio[0]) 
-                  | #{radio[0]}
-                  br
-        when 5
-          - min = input.childs[0][0]
-          br
-          - max = input.childs[input.childs.length - 1][0]
-          label #{input.label}
-          input(id=input.name name=input.name type='range' min=min max=max step='1')
-          br
-        when 9
-          label(for=input.name) #{input.label}
-          br
-          input(id=input.name name=input.name type='date')
-          br
-        when 10
-          label(for=input.name) #{input.label}
-          br
-          input(id=input.name name=input.name type='time' value='06:00')
-          br
-    button(type='submit') #{submitText}
+mixin paragraph(label, name)
+  .form-group
+    label(for=name)= label
+    textarea.form-control(id=name name=name rows=2)
+
+mixin multiple-choice(label, name, options)
+  .form-group
+    label= label
+    each option, i in options
+      .form-check
+        - id = name + '-' + i
+        label.form-check-label(for=id)
+        input(id=id class='form-check-input' name=name type='radio' value=option[0])/ #{option[0]}
+
+mixin dropdown(label, name, options)
+  .form-group
+    label(for=name)= label
+    select.form-control(id=name name=name)
+      each option in options
+        option(value=option[0])= option[0]
+
+mixin checkboxes(label, name, options)
+  .form-group
+    label= label
+    each option, i in options
+      .form-check
+        - id = name + '-' + i
+        label.form-check-label(for=id)
+        input.form-check-input(id=id name=name type='checkbox' value=option[0])/ #{option[0]}
+
+mixin range(label, name, options)
+  - min = options[0][0]
+  - max = options[options.length - 1][0]
+  label= label 
+  input.form-control-range(id=name name=name type='range' min=min max=max step='1')
+
+mixin linear-scale(label, name, options)
+  label= label 
+  .form-group
+    each option, i in options
+      .form-check.form-check-inline.mx-1.mx-md-3
+        - value = i + parseInt(options[0])
+        label.form-check-label.text-center= value
+          input.form-check-input.d-block.position-relative.mt-2.mx-auto(name=name value=value type='radio')
+
+mixin date(label, name)
+  .form-group
+    label(for=name)= label
+    input.form-control(id=name name=name type='date')
+
+mixin time(label, name)
+  .form-group
+    label(for=name)= label
+    input.form-control(id=name name=name type='time' value='06:00')
+
+doctype html
+html(lang='vi')
+  head
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title= title
+    link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js')
+  body.bg-transparent
+
+    - pageHistory = []
+
+    form(action=action method='post')
+      each section, i in sections
+        - id = 'section-' + i
+        - prevId = '#section-' + (i - 1)
+        - nextId = '#section-' + (i + 1)
+        - pageHistory.push(i)
+
+        .card(id=id style=(i === 0) ? '' : 'display: none')
+          .card-body
+            if section.title
+              h5.card-title= section.title
+            each field in section.fields
+              case field.type
+                when 0
+                  +short-answer(field.label, field.name)
+                when 1
+                  +paragraph(field.label, field.name)
+                when 2
+                  +multiple-choice(field.label, field.name, field.options)
+                when 3
+                  +dropdown(field.label, field.name, field.options)
+                when 4
+                  +checkboxes(field.label, field.name, field.options)
+                when 5
+                  +linear-scale(field.label, field.name, field.options)
+                when 9
+                  +date(field.label, field.name)
+                when 10 
+                  +time(field.label, field.name)
+            if sections[i - 1]
+              a.btn.btn-secondary.mr-2(href=prevId onclick=`$('.card').hide(); $('${prevId}').show()`) Trang trước
+            if sections[i + 1]
+              a.btn.btn-secondary.mr-2(href=nextId onclick=`$('.card').hide(); $('${nextId}').show()`) Trang sau
+            if !sections[i + 1]
+              input.btn.btn-primary(type='submit' value='Gửi')
+
+      .form-group.d-none
+        - pageHistory = pageHistory.join(',')
+        label(for='page-history') Hidden Input
+        input.form-control(id='page-history', name='pageHistory', type='text', value=pageHistory)

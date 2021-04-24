@@ -1,6 +1,6 @@
 {
   "name": "customize-google-form",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Change the look of Google Form with Bootstrap theme or edit CSS with available source code",
   "private": true,
   "scripts": {
