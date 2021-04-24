@@ -1,0 +1,61 @@
+extends layouts/default
+
+block content
+  form(action=data.formAction)
+    each input in data.dataParams
+      case input.type
+        when 0
+          label(for=input.name) #{input.label}
+          br
+          input(id=input.name name=input.name type='text')
+          br
+        when 1
+          label(for=input.name) #{input.label}
+          br
+          textarea(id=input.name name=input.name rows=3)
+          br
+        when 2
+          label #{input.label}
+          br
+          each radio, i in input.childs
+            .form-check
+              - id = input.name + '-' + i
+                label(for=id)
+                  input(id=id name=input.name type='radio' value=radio[0]) 
+                  | #{radio[0]}
+                  br
+        when 3
+          label(for=input.name) #{input.label}
+          br
+          select(id=input.name name=input.name)
+            each option in input.childs
+              option(value=option[0]) #{option[0]}
+              br
+        when 4
+          label #{input.label}
+          br
+          each radio, i in input.childs
+            .form-check
+              - id = input.name + '-' + i
+                label(for=id)
+                  input(id=id name=input.name type='checkbox' value=radio[0]) 
+                  | #{radio[0]}
+                  br
+        when 5
+          - min = input.childs[0][0]
+          br
+          - max = input.childs[input.childs.length - 1][0]
+          label #{input.label}
+          input(id=input.name name=input.name type='range' min=min max=max step='1')
+          br
+        when 9
+          label(for=input.name) #{input.label}
+          br
+          input(id=input.name name=input.name type='date')
+          br
+        when 10
+          label(for=input.name) #{input.label}
+          br
+          input(id=input.name name=input.name type='time' value='06:00')
+          br
+    button(type='submit') #{submitText}

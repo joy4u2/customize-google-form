@@ -1,0 +1,28 @@
+extends layouts/bootstrap
+
+block content
+  .container.mt-3
+    .row
+      .col-12.col-md-6.p-3
+         h1 Google Form Customize
+         p Apply Bootstrap style or create a new style to your Google Form
+         form#form-input
+          .form-group
+            label(for='id') Google Form URL
+            input(id='id' class='form-control' name='id' type='text')
+          .form-group
+            label(for='submit-text') Submit Button Text
+            input(id='submit-text' class='form-control' name='submit-text' type='text' value='OK')
+          .form-check
+            input(id='bootstrap' class='form-check-input' name='bootstrap' type='checkbox' checked)
+            label(class='form-check-label' for='bootstrap') Apply Bootstrap
+          input(class='btn btn-primary' type='submit')
+      .col-12.col-md-6.p-3
+        h1 Result
+        iframe#frame-result(style={ width: '100%', height: '60vh', border: '1px solid #e1e1e1' } src='')
+        h2 iFrame
+        input(id='result' class='form-control' type='text')
+        h2 Download source-code
+        a(id='download' class='btn btn-primary' href='#') Download
+
+  script(src='./javascripts/index.js')
