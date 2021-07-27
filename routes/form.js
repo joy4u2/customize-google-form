@@ -16,14 +16,20 @@ function loadDOM(response) {
 }
 
 function findGoogleFormData($) {
-  let data = null;
+  let data = {
+    isCollectingEmail: false,
+    form: null,
+  };
   let redundancy = "var FB_PUBLIC_LOAD_DATA_ = ";
+
+  let isCollectingEmail = $(".freebirdFormviewerViewEmailCollectionField");
+  data.isCollectingEmail = isCollectingEmail.length > 0 ? true : false;
 
   $("script").each((index, element) => {
     let inner = $(element).html();
     if (inner.indexOf(redundancy) !== -1) {
       inner = inner.replace(/[\n\r]*/g, "");
-      data = inner.slice(redundancy.length, -1);
+      data.form = inner.slice(redundancy.length, -1);
     }
   });
 
@@ -35,7 +41,7 @@ function convertGoogleFormData(string) {
     throw new Error('Not a valid form');
   }
 
-  let raw = JSON.parse(string);
+  let raw = JSON.parse(string.form);
   let data = { title: "", description: "", action: "", sections: [] };
 
   data.title = raw[3];
@@ -45,11 +51,42 @@ function convertGoogleFormData(string) {
   let sections = raw[1][1];
   let section = { title: "", fields: [] };
 
+  // if have email collecting, then add an email input to section first
+  if (string.isCollectingEmail) {
+    let temp = {
+      label: "Email",
+      description: "",
+      type: 11,
+      name: "emailAddress",
+    };
+    section.fields.push(temp);
+  }
+
   sections.forEach((field) => {
     if (!field[4]) {
       data.sections.push(section);
       section = { title: field[1], fields: [] };
-    } else {
+    }
+    else if (field[3] === 7) { // check is choice grid
+      let temp = {
+        label: field[1],
+        description: field[2] || "",
+        type: field[3],
+        columns: field[4][0][1], // get columns label from first child
+        child: []
+      };
+
+      field[4].forEach(child => {
+        temp.child.push({
+          type: child[11][0],
+          row: child[3][0],
+          name: "entry." + child[0],
+        });
+      });
+
+      section.fields.push(temp);
+    }
+    else {
       let temp = {
         label: field[1],
         description: field[2] || "",
