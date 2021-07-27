@@ -48,6 +48,29 @@ mixin linear-scale(label, name, options)
         label.form-check-label.text-center= value
           input.form-check-input.d-block.position-relative.mt-2.mx-auto(name=name value=value type='radio')
 
+mixin grid-choice(label, columns, child)
+  label= label
+
+  .table-responsive
+    table.table.table-borderless
+    
+      tr.border-bottom
+        td.text-center
+        each column in columns
+          td.text-center= column
+
+      each row in child
+        tr.border-bottom
+          td.text-center= row.row
+          each option, i in columns
+            td.text-center
+              - id = option + '-' + i
+              if row.type == 0
+                input(id=id name=row.name type='radio' value=option[0])
+              else
+                input(id=id name=row.name type='checkbox' value=option[0])
+
+
 mixin date(label, name)
   .form-group
     label(for=name)= label
@@ -57,6 +80,11 @@ mixin time(label, name)
   .form-group
     label(for=name)= label
     input.form-control(id=name name=name type='time' value='06:00')
+
+mixin email-collecting(label, name)
+  .form-group
+    label(for=name)= label
+    input.form-control(id=name name=name type='email' required)
 
 doctype html
 html(lang='vi')
@@ -97,10 +125,14 @@ html(lang='vi')
                   +checkboxes(field.label, field.name, field.options)
                 when 5
                   +linear-scale(field.label, field.name, field.options)
+                when 7
+                  +grid-choice(field.label, field.columns, field.child)
                 when 9
                   +date(field.label, field.name)
-                when 10 
+                when 10
                   +time(field.label, field.name)
+                when 11
+                  +email-collecting(field.label, field.name)
             if sections[i - 1]
               a.btn.btn-secondary.mr-2(href=prevId onclick=`$('.card').hide(); $('${prevId}').show()`) Trang trước
             if sections[i + 1]
